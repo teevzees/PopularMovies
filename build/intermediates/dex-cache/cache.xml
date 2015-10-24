@@ -2,11 +2,25 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.1.0\jars\classes.jar"
+        jar="C:\Users\jeff\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.1.0\support-annotations-23.1.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="57ae0d750ff83f0c738d21720224ac7ea866a094">
-        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\classes-22d63d4c853fda23777b4f6af50db54e61768043.jar" />
+        sha1="92e3fc113ec3ee36b64603a38857b95700025633">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\support-annotations-23.1.0-faec6cff54c7defe2cbb0b8cf5061d9e374e491d.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.squareup.retrofit\retrofit\2.0.0-beta2\880d9e0997b2d1bfc98e0d121ced33ee5d04aac4\retrofit-2.0.0-beta2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="880d9e0997b2d1bfc98e0d121ced33ee5d04aac4">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\retrofit-2.0.0-beta2-510630943df4b087910933a7271c1749e9f29c9b.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.4\695b63d702f505b9b916e02272e3b6381bade7f\gson-2.4.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="0695b63d702f505b9b916e02272e3b6381bade7f">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\gson-2.4-ed01e3430f24a38ba73d590875e634f07485bc12.jar" />
     </item>
     <item
         jar="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.0\jars\libs\internal_impl-23.1.0.jar"
@@ -16,11 +30,18 @@
         <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\internal_impl-23.1.0-161c7e7d10d1eb0e935c95c5b12f20c79c7f79c4.jar" />
     </item>
     <item
-        jar="C:\Users\jeff\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.1.0\support-annotations-23.1.0.jar"
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="92e3fc113ec3ee36b64603a38857b95700025633">
-        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\support-annotations-23.1.0-faec6cff54c7defe2cbb0b8cf5061d9e374e491d.jar" />
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\okio-1.6.0-d7db7f760537f783980d48510c5b55f0f323bf4a.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.1.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="57ae0d750ff83f0c738d21720224ac7ea866a094">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\classes-22d63d4c853fda23777b4f6af50db54e61768043.jar" />
     </item>
     <item
         jar="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.0\jars\classes.jar"
@@ -28,6 +49,48 @@
         revision="22.0.1"
         sha1="ddde541c289c8b816a8f8fd6c325d80788c522a6">
         <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\classes-da22580b9d390d007175b0215656139c145d40e7.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\org.parceler\parceler-api\1.0.3\2b2ec1a0bd113f0ff48151da83d2209ef64ce907\parceler-api-1.0.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="2b2ec1a0bd113f0ff48151da83d2209ef64ce907">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\parceler-api-1.0.3-e0b11eab62af0c62aa1a2ceec26322ded0508f2a.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.squareup.retrofit\converter-gson\2.0.0-beta2\392c3d09e0f5e7087544093cc0cb23bb9c7af5fa\converter-gson-2.0.0-beta2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="392c3d09e0f5e7087544093cc0cb23bb9c7af5fa">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\converter-gson-2.0.0-beta2-8ebdfa28d4688f2a3b2ca22256d6e0070aa2c38e.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.jakewharton\butterknife\7.0.1\d5d13ea991eab0252e3710e5df3d6a9d4b21d461\butterknife-7.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d5d13ea991eab0252e3710e5df3d6a9d4b21d461">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\butterknife-7.0.1-a92cd4ea055194300d7c888ec0bc90a0654f29d9.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.squareup.picasso\picasso\2.5.2\7446d06ec8d4f7ffcc53f1da37c95f200dcb9387\picasso-2.5.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="7446d06ec8d4f7ffcc53f1da37c95f200dcb9387">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\picasso-2.5.2-56c36d105f55dbb5e618088731978f2a484c8cf5.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.5.0\4de2b4ed3445c37ec1720a7d214712e845a24636\okhttp-2.5.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4de2b4ed3445c37ec1720a7d214712e845a24636">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\okhttp-2.5.0-b007d9ae96e26a9b9ed023ace0d707e337868532.jar" />
+    </item>
+    <item
+        jar="C:\Users\jeff\.gradle\caches\modules-2\files-2.1\org.parceler\parceler\1.0.3\383aecb6c2ce22f57595f84144c4244390c5b2f5\parceler-1.0.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="383aecb6c2ce22f57595f84144c4244390c5b2f5">
+        <dex dex="C:\Users\jeff\AndroidStudioProjects\PopularMovies\app\build\intermediates\pre-dexed\debug\parceler-1.0.3-721be2a82c9f6be5256a209e3822358ada0c5d0d.jar" />
     </item>
 
 </items>

@@ -21,10 +21,11 @@ import org.parceler.Parcels;
 
 import java.util.List;
 
+import retrofit.Call;
 import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by jeff on 9/28/2015.
@@ -32,8 +33,8 @@ import retrofit.client.Response;
  */
 public class DiscoveryFragment extends Fragment {
     private static final String LOG_TAG = DiscoveryFragment.class.getSimpleName();
-    private static final String BASE_URL = "http://api.themoviedb.org";
-    private static final String MY_API_KEY = "********************************";
+    private static final String BASE_URL = "http://api.themoviedb.org/";
+    private static final String MY_API_KEY = "************************************";
     private static TmdbApi apiService;
     //When we get the data from The Movie DB it will live here.
     private static List<Result> movieArray;
@@ -48,7 +49,7 @@ public class DiscoveryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.v(LOG_TAG, "onCreate happened!!!!!!!!!!!!!");
+        //Log.v(LOG_TAG, "onCreate happened!!!!!!!!!!!!!");
     }
 
     @Override
@@ -76,7 +77,7 @@ public class DiscoveryFragment extends Fragment {
         super.onStart();
         //Fetch the list of movies for the first time.
         executeSort();
-        Log.v(LOG_TAG, "onStart happened!!!!!!!!!!!");
+        //Log.v(LOG_TAG, "onStart happened!!!!!!!!!!!");
     }
 
     public void executeSort() {
@@ -89,28 +90,33 @@ public class DiscoveryFragment extends Fragment {
 
     public void createService(){
         if(apiService == null) {
-            RestAdapter retrofit = new RestAdapter.Builder()
-                    .setLogLevel(RestAdapter.LogLevel.BASIC)
-                    .setEndpoint(BASE_URL)
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build();
             apiService = retrofit.create(TmdbApi.class);
         }else{
-//            Log.v(LOG_TAG, "Reusing RestAdapter.");
+            Log.v(LOG_TAG, "Reusing Retrofit Instance.");
         }
     }
 
-    public void getMovieArray(String sort) throws RetrofitError{
-        apiService.movieArray(sort,MY_API_KEY, new Callback<TmdbModels>() {
+    public void getMovieArray(String sort) throws Error{
+        Call<TmdbModels> call = apiService.movieArray(sort, MY_API_KEY);
+        call.enqueue(new Callback<TmdbModels>(){
             @Override
-            public void success(TmdbModels newModels, Response response){
-                movieArray = newModels.getResults();
-                makeButtons();
-//                Log.v(LOG_TAG, response.toString());
+            public void onResponse(Response<TmdbModels> response, Retrofit retrofit){
+                if(response.isSuccess()) {
+                    movieArray = response.body().getResults();
+                    makeButtons();
+                    Log.v(LOG_TAG, response.toString());
+                }else{
+                    Log.e(LOG_TAG, response.errorBody().toString());
+                }
             }
             @Override
-            public void failure(RetrofitError e){
+            public void onFailure(Throwable t){
                 Toast.makeText(getActivity(), "The Internet is down!", Toast.LENGTH_LONG).show();
-//                Log.e(LOG_TAG, e.toString());
+                Log.e(LOG_TAG, t.toString());
             }
         });
     }
@@ -120,7 +126,7 @@ public class DiscoveryFragment extends Fragment {
         gridview.setAdapter(new ImageAdapterPicasso(getActivity(), posterUrls));
 }
 
-    public String[] getPosterUrls() throws RetrofitError {
+    public String[] getPosterUrls(){
         String[] movieUrls = new String[movieArray.size()];
         for (int i = 0; i < movieArray.size(); i++) {
             Result object = movieArray.get(i);
@@ -136,18 +142,18 @@ public class DiscoveryFragment extends Fragment {
     }
     public void onPause(){
         super.onPause();
-        Log.v(LOG_TAG, "onPause happened!!!!!!!!!!!!!!");
+        //Log.v(LOG_TAG, "onPause happened!!!!!!!!!!!!!!");
     }
     public void onResume(){
         super.onResume();
-        Log.v(LOG_TAG, "onResume happened!!!!!!!!!!!!!!");
+        //Log.v(LOG_TAG, "onResume happened!!!!!!!!!!!!!!");
     }
     public void onStop(){
         super.onStop();
-        Log.v(LOG_TAG, "onStop happened!!!!!!!!!!!!!!!");
+        //Log.v(LOG_TAG, "onStop happened!!!!!!!!!!!!!!!");
     }
     public void onDestroy(){
         super.onDestroy();
-        Log.v(LOG_TAG, "onDetroy happened!!!!!!!!!!!!");
+        //Log.v(LOG_TAG, "onDetroy happened!!!!!!!!!!!!");
     }
 }
