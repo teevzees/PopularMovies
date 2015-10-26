@@ -13,9 +13,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.jefftiensivu.popularmovies.api.TmdbApi;
-import com.jefftiensivu.popularmovies.model.Result;
-import com.jefftiensivu.popularmovies.model.TmdbModels;
+import com.jefftiensivu.popularmovies.api.TmdbService;
+import com.jefftiensivu.popularmovies.model.MovieInfo;
+import com.jefftiensivu.popularmovies.model.TmdbSorted;
 
 import org.parceler.Parcels;
 
@@ -23,7 +23,6 @@ import java.util.List;
 
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
@@ -33,11 +32,9 @@ import retrofit.Retrofit;
  */
 public class DiscoveryFragment extends Fragment {
     private static final String LOG_TAG = DiscoveryFragment.class.getSimpleName();
-    private static final String BASE_URL = "http://api.themoviedb.org/";
-    private static final String MY_API_KEY = "************************************";
-    private static TmdbApi apiService;
+
     //When we get the data from The Movie DB it will live here.
-    private static List<Result> movieArray;
+    private static List<MovieInfo> movieArray;
     private GridView gridview;
 
 
@@ -84,37 +81,32 @@ public class DiscoveryFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort = prefs.getString(getString(R.string.pref_sort_key),
                 getString(R.string.pref_sort_default));
-        createService();
         getMovieArray(sort);
     }
 
-    public void createService(){
-        if(apiService == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            apiService = retrofit.create(TmdbApi.class);
-        }else{
-            Log.v(LOG_TAG, "Reusing Retrofit Instance.");
-        }
-    }
-
+    /**
+     * This is way more complicated then it needs to be... but I can't think of a better way to do
+     * this.
+     * @param sort String how you'd like your movies sorted
+     * @throws Error
+     */
     public void getMovieArray(String sort) throws Error{
-        Call<TmdbModels> call = apiService.movieArray(sort, MY_API_KEY);
-        call.enqueue(new Callback<TmdbModels>(){
+        TmdbService myService = new TmdbService();
+        Call<TmdbSorted> call = TmdbService.apiService.movieArray(sort, TmdbService.MY_API_KEY);
+        call.enqueue(new Callback<TmdbSorted>() {
             @Override
-            public void onResponse(Response<TmdbModels> response, Retrofit retrofit){
-                if(response.isSuccess()) {
+            public void onResponse(Response<TmdbSorted> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
                     movieArray = response.body().getResults();
                     makeButtons();
-                    Log.v(LOG_TAG, response.toString());
-                }else{
+//                    Log.v(LOG_TAG, response.toString());
+                } else {
                     Log.e(LOG_TAG, response.errorBody().toString());
                 }
             }
+
             @Override
-            public void onFailure(Throwable t){
+            public void onFailure(Throwable t) {
                 Toast.makeText(getActivity(), "The Internet is down!", Toast.LENGTH_LONG).show();
                 Log.e(LOG_TAG, t.toString());
             }
@@ -124,12 +116,12 @@ public class DiscoveryFragment extends Fragment {
     public void makeButtons(){
         String[] posterUrls = getPosterUrls();
         gridview.setAdapter(new ImageAdapterPicasso(getActivity(), posterUrls));
-}
+    }
 
     public String[] getPosterUrls(){
         String[] movieUrls = new String[movieArray.size()];
         for (int i = 0; i < movieArray.size(); i++) {
-            Result object = movieArray.get(i);
+            MovieInfo object = movieArray.get(i);
             movieUrls[i] = object.getUrl();
 
         }

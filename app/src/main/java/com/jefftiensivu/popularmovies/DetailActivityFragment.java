@@ -8,14 +8,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.jefftiensivu.popularmovies.model.Result;
+import com.jefftiensivu.popularmovies.api.TmdbService;
+import com.jefftiensivu.popularmovies.model.MovieInfo;
+import com.jefftiensivu.popularmovies.model.ReviewInfo;
+import com.jefftiensivu.popularmovies.model.TmdbReviews;
+import com.jefftiensivu.popularmovies.model.TmdbTrailers;
+import com.jefftiensivu.popularmovies.model.TrailerInfo;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -38,7 +50,7 @@ public class DetailActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        Result result = null;
+        MovieInfo result = null;
         try {
             result = Parcels.unwrap(getActivity().getIntent().getParcelableExtra("DETAIL_RESULT"));
         }catch (ClassCastException e){
@@ -76,8 +88,117 @@ public class DetailActivityFragment extends Fragment {
             }else{
                 textSynopsis.setText("Loading Error");
             }
+            if (result.getId() != null) {
+                getTrailerArray(result.getId().toString());
+                getReviewArray(result.getId().toString());
+//                getTrailersAndReviews(result.getId().toString());
+                Log.v(LOG_TAG, "Movie id = " + result.getId().toString());
+            }else{
+                //textSynopsis.setText("Loading Error");
+            }
         }
-
         return rootView;
+    }
+
+/*
+    public void getTrailersAndReviews(String id) throws Error{
+        TmdbService myService = new TmdbService();
+        Call<TmdbTrailers> call = myService.apiService.trailerAndReviewCall(id, myService.MY_API_KEY);
+        call.enqueue(new Callback<TmdbTrailers>() {
+            @Override
+            public void onResponse(Response<TmdbTrailers> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    List<TrailerInfo> trailerArray = response.body().getResults();
+                    Log.v(LOG_TAG, response.toString());
+                    if(trailerArray.size() < 1){
+                        Log.e(LOG_TAG, "trailerArray is empty!!!");
+                        Log.e(LOG_TAG, "Response code " + response.code());
+                        //Todo take away Trailers section of UI.
+                    }
+                    for(TrailerInfo t : trailerArray){
+                        Log.v(LOG_TAG, t.getName());
+                        Log.v(LOG_TAG, t.getKey());
+                        //Todo add Trailer info to UI.
+                    }
+                } else {
+                    Log.e(LOG_TAG, response.errorBody().toString());
+                    Log.e(LOG_TAG,"Response code " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getActivity(), "The Internet is down!", Toast.LENGTH_LONG).show();
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
+    }
+*/
+
+    public void getTrailerArray(String id) throws Error{
+        TmdbService myService = new TmdbService();
+        Call<TmdbTrailers> call = TmdbService.apiService.trailerCall(id, TmdbService.MY_API_KEY);
+        call.enqueue(new Callback<TmdbTrailers>() {
+            @Override
+            public void onResponse(Response<TmdbTrailers> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    List<TrailerInfo> trailerArray = response.body().getResults();
+                    Log.v(LOG_TAG, response.toString());
+                    if(trailerArray.size() < 1){
+                        Log.e(LOG_TAG, "trailerArray is empty!!!");
+                        Log.e(LOG_TAG, "Response code " + response.code());
+                        //Todo take away Trailers section of UI.
+                    }
+                    for(TrailerInfo t : trailerArray){
+                        Log.v(LOG_TAG, t.getName());
+                        Log.v(LOG_TAG, t.getKey());
+                        //Todo add Trailer info to UI.
+                    }
+                } else {
+                    Log.e(LOG_TAG, response.errorBody().toString());
+                    Log.e(LOG_TAG,"Response code " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getActivity(), "The Internet is down!", Toast.LENGTH_LONG).show();
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
+    }
+
+    public void getReviewArray(String id) throws Error{
+        //Todo see if I can batch these two calls.
+        TmdbService myService = new TmdbService();
+        Call<TmdbReviews> call = TmdbService.apiService.reviewCall(id, TmdbService.MY_API_KEY);
+        call.enqueue(new Callback<TmdbReviews>() {
+            @Override
+            public void onResponse(Response<TmdbReviews> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    List<ReviewInfo> reviewArray = response.body().getResults();
+                    Log.v(LOG_TAG, response.toString());
+                    if(reviewArray.size() < 1){
+                        Log.e(LOG_TAG, "reviewArray is empty!!!");
+                        Log.e(LOG_TAG, "Response code " + response.code());
+                        //Todo take away Review section of UI.
+                    }
+                    for(ReviewInfo t : reviewArray){
+                        Log.v(LOG_TAG, t.getAuthor());
+                        Log.v(LOG_TAG, t.getContent());
+                        //Todo add Review info to UI.
+                    }
+                } else {
+                    Log.e(LOG_TAG, response.errorBody().toString());
+                    Log.e(LOG_TAG,"Response code " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getActivity(), "The Internet is down!", Toast.LENGTH_LONG).show();
+                Log.e(LOG_TAG, t.toString());
+            }
+        });
     }
 }
