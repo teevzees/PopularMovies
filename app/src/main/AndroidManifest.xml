@@ -35,6 +35,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jefftiensivu.popularmovies.MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.jefftiensivu.popularmovies.data.PopMoviesProvider"
+            android:name="com.jefftiensivu.popularmovies.data.generated.PopMoviesProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

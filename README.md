@@ -1,5 +1,5 @@
 # PopMovies
 
-Please, add your TMDB API Key to the DiscoveryFragment.
+Please, add your TMDB API Key to com.jefftiensivu.popularmovies.api.TmdbService.
 
 Thanks,

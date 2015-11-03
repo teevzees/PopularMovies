@@ -1,8 +1,7 @@
 package com.jefftiensivu.popularmovies.api;
 
-import com.jefftiensivu.popularmovies.model.TmdbReviews;
+import com.jefftiensivu.popularmovies.model.MovieDetails;
 import com.jefftiensivu.popularmovies.model.TmdbSorted;
-import com.jefftiensivu.popularmovies.model.TmdbTrailers;
 
 import retrofit.Call;
 import retrofit.http.GET;
@@ -19,6 +18,14 @@ public interface TmdbApi {
             @Query("api_key") String key
     );
 
+    @GET("3/movie/{id}")
+    Call<MovieDetails> trailerAndReviewCall(
+            @Path("id") String id,
+            @Query("api_key") String key,
+            @Query("append_to_response") String appendThis
+    );
+
+/*
     @GET("3/movie/{id}/videos")
     Call<TmdbTrailers> trailerCall(
             @Path("id") String id,
@@ -30,4 +37,5 @@ public interface TmdbApi {
             @Path("id") String id,
             @Query("api_key") String key
     );
+*/
 }

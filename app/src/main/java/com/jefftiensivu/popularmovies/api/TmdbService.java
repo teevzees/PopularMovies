@@ -10,11 +10,11 @@ public class TmdbService {
     private static final String LOG_TAG = TmdbService.class.getSimpleName();
     private static final String BASE_URL = "http://api.themoviedb.org/";
 
-    public static final String MY_API_KEY = "********************************";
+    public static final String MY_API_KEY = "*********************************";
 
-    public static TmdbApi apiService;
+    private static TmdbApi apiService;
 
-    public TmdbService(){
+    public static TmdbApi getApiService(){
         if(apiService == null) {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
@@ -22,5 +22,6 @@ public class TmdbService {
                     .build();
             apiService = retrofit.create(TmdbApi.class);
         }
+        return apiService;
     }
 }
