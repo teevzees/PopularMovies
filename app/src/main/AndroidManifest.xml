@@ -28,7 +28,7 @@
                 android:value="com.jefftiensivu.popularmovies.MainActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivityFragment"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
             <meta-data
