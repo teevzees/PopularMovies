@@ -12,30 +12,39 @@ public class MovieDetails {
     @SerializedName("id")
     @Expose
     private Integer id;
+
     @SerializedName("overview")
     @Expose
     private String overview;
+
     @SerializedName("popularity")
     @Expose
     private Double popularity;
+
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
+
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
+
     @SerializedName("runtime")
     @Expose
     private Integer runtime;
+
     @SerializedName("title")
     @Expose
     private String title;
+
     @SerializedName("vote_average")
     @Expose
     private Double voteAverage;
+
     @SerializedName("trailers")
     @Expose
     private Trailers trailers;
+
     @SerializedName("reviews")
     @Expose
     private Reviews reviews;

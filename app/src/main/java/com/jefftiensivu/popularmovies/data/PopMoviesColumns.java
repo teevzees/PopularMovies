@@ -41,8 +41,8 @@ public interface PopMoviesColumns {
     @DataType(DataType.Type.INTEGER)
     String RUN_TIME = "run_time";
 
-    @DataType(DataType.Type.INTEGER)
-    String FAV = "fav";
+//    @DataType(DataType.Type.INTEGER)
+//    String FAV = "fav";
 
     @DataType(DataType.Type.INTEGER)
     String TIME_STAMP = "time_stamp";
