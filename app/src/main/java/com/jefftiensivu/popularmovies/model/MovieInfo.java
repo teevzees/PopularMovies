@@ -11,48 +11,65 @@ import java.util.List;
 @Parcel
 public class MovieInfo {
 
-    @SerializedName("adult")
-    @Expose
-    public Boolean adult;
-    @SerializedName("backdrop_path")
-    @Expose
-    public String backdropPath;
-    @SerializedName("genre_ids")
-    @Expose
-    public List<Integer> genreIds = new ArrayList<Integer>();
     @SerializedName("id")
     @Expose
     public Integer id;
-    @SerializedName("original_language")
-    @Expose
-    public String originalLanguage;
-    @SerializedName("original_title")
-    @Expose
-    public String originalTitle;
+
     @SerializedName("overview")
     @Expose
     public String overview;
-    @SerializedName("release_date")
-    @Expose
-    public String releaseDate;
-    @SerializedName("poster_path")
-    @Expose
-    public String posterPath;
+
     @SerializedName("popularity")
     @Expose
     public Double popularity;
+
+    @SerializedName("poster_path")
+    @Expose
+    public String posterPath;
+
+    @SerializedName("release_date")
+    @Expose
+    public String releaseDate;
+
+
+
+
     @SerializedName("title")
     @Expose
     public String title;
-    @SerializedName("video")
-    @Expose
-    public Boolean video;
+
     @SerializedName("vote_average")
     @Expose
     public Double voteAverage;
+
     @SerializedName("vote_count")
     @Expose
     public Integer voteCount;
+
+
+    @SerializedName("adult")
+    @Expose
+    public Boolean adult;
+
+    @SerializedName("backdrop_path")
+    @Expose
+    public String backdropPath;
+
+    @SerializedName("genre_ids")
+    @Expose
+    public List<Integer> genreIds = new ArrayList<Integer>();
+
+    @SerializedName("original_language")
+    @Expose
+    public String originalLanguage;
+
+    @SerializedName("original_title")
+    @Expose
+    public String originalTitle;
+
+    @SerializedName("video")
+    @Expose
+    public Boolean video;
 
 
     public MovieInfo(){}
