@@ -1,9 +1,14 @@
 package com.jefftiensivu.popularmovies;
 
 import android.app.Fragment;
+import android.content.ContentProviderOperation;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,12 +20,16 @@ import android.widget.Toast;
 
 import com.jefftiensivu.popularmovies.api.TmdbApi;
 import com.jefftiensivu.popularmovies.api.TmdbService;
+import com.jefftiensivu.popularmovies.data.PopMoviesColumns;
 import com.jefftiensivu.popularmovies.data.PopMoviesDbHelper;
+import com.jefftiensivu.popularmovies.data.PopMoviesProvider;
 import com.jefftiensivu.popularmovies.model.MovieInfo;
 import com.jefftiensivu.popularmovies.model.TmdbSorted;
+import com.jefftiensivu.popularmovies.utility.Time;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Call;
@@ -38,13 +47,13 @@ public class MainFragment extends Fragment{
     private static final int CURSOR_LOADER_ID = 0;
 
     //When we get the data from The Movie DB it will live here.
-    private static List<MovieInfo> movieArray;
+    private static List<MovieInfo> mMovieArray;
     private static String mSort;
     private GridView gridview;
 
 
     public MainFragment() {
-        movieArray = null;
+        mMovieArray = null;
     }
 
     @Override
@@ -58,7 +67,7 @@ public class MainFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View rootView = inflater.inflate(R.layout.discovery_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.main_fragment, container, false);
         gridview = (GridView) rootView.findViewById(R.id.gridview);
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,7 +75,7 @@ public class MainFragment extends Fragment{
 //                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra("DETAIL_RESULT", Parcels.wrap(movieArray.get(position)));
+                        .putExtra("DETAIL_RESULT", Parcels.wrap(mMovieArray.get(position)));
                 startActivity(intent);
             }
         });
@@ -105,9 +114,10 @@ public class MainFragment extends Fragment{
             @Override
             public void onResponse(Response<TmdbSorted> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    movieArray = response.body().getResults();
+                    mMovieArray = response.body().getResults();
 
-                    PopMoviesDbHelper.insertData(movieArray, mSort, getActivity());
+//                    PopMoviesDbHelper.insertMovieInfos(mMovieArray, mSort, getActivity());
+                    insertMovieInfos();
 
                     makeButtons();
 //                    Log.v(LOG_TAG, response.toString());
@@ -122,6 +132,49 @@ public class MainFragment extends Fragment{
                 Log.e(LOG_TAG, t.toString());
             }
         });
+    }
+
+    /**
+     * This method ads the initial MovieInfo to the DataBase. This is not the only data being added
+     * to the DB. MovieDetails may be added later.
+     */
+    public void insertMovieInfos(){
+        Log.d(LOG_TAG, "Inserting List of MovieInfos");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(mMovieArray.size());
+
+                Uri contentUri = PopMoviesDbHelper.sortUri(mSort);
+                Cursor c = getActivity().getContentResolver().query(contentUri, null, null, null, null);
+
+                if (c == null || c.getCount() == 0) {
+                    for (MovieInfo movieInfo : mMovieArray) {
+                        ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                                contentUri);
+                        builder.withValue(PopMoviesColumns.TMDB_ID, movieInfo.getId());
+                        builder.withValue(PopMoviesColumns.TITLE, movieInfo.getTitle());
+                        Log.i(LOG_TAG, "Inserting data for " + movieInfo.getTitle()); ///////////////////is this happening???
+                        builder.withValue(PopMoviesColumns.OVERVIEW, movieInfo.getOverview());
+                        builder.withValue(PopMoviesColumns.RELEASE_DATE, movieInfo.getReleaseDate());
+                        builder.withValue(PopMoviesColumns.POSTER_PATH, movieInfo.getUrl());
+                        builder.withValue(PopMoviesColumns.POPULARITY, movieInfo.getPopularity());
+                        builder.withValue(PopMoviesColumns.VOTE_AVERAGE, movieInfo.getVoteAverage());
+                        builder.withValue(PopMoviesColumns.VOTE_COUNT, movieInfo.getVoteCount());
+                        builder.withValue(PopMoviesColumns.TIME_STAMP, Time.getTimeStamp());
+                        batchOperations.add(builder.build());
+                    }
+                    try {
+                        getActivity().getContentResolver().applyBatch(PopMoviesProvider.AUTHORITY,
+                                batchOperations);
+                    } catch (RemoteException | OperationApplicationException e) {
+                        Log.e(LOG_TAG, "Error applying batch insert", e);
+                    }
+                }
+                c.close();
+            }
+        }).start();
     }
 
 /*
@@ -151,9 +204,9 @@ public class MainFragment extends Fragment{
     }
 
     public String[] getPosterUrls(){
-        String[] movieUrls = new String[movieArray.size()];
-        for (int i = 0; i < movieArray.size(); i++) {
-            MovieInfo object = movieArray.get(i);
+        String[] movieUrls = new String[mMovieArray.size()];
+        for (int i = 0; i < mMovieArray.size(); i++) {
+            MovieInfo object = mMovieArray.get(i);
             movieUrls[i] = object.getUrl();
 
         }
