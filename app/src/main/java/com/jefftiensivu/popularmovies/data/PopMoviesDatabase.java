@@ -31,6 +31,9 @@ public final class PopMoviesDatabase {
     @Table(TrailerColumns.class)
     public static final String TRAILERS = "trailers";
 
+    @Table(ReviewColumns.class)
+    public static final String REVIEWS = "reviews";
+
     public String getDbPath(Context context, String dbName){
         return context.getDatabasePath(dbName).getAbsolutePath();
     }

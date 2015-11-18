@@ -27,18 +27,23 @@ public class PopMoviesDbHelper {
     }
 
 
+
     public static Uri getPopularityTable(){
         return POPULARITY_TABLE;
     }
+
     public static Uri getHighestRatedTable(){
         return HIGHEST_RATED_TABLE;
     }
+
     public static Uri getFavoriteTable(){
         return FAVORITE_TABLE;
     }
-    public static Uri[] getTableUris(){
+
+    public static Uri[] getMovieTableUris(){
         return sTableUris;
     }
+
 
     public static Uri sortUri(String sort){
         return sTableMap.get(sort);

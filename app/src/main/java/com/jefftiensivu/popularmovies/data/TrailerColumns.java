@@ -21,8 +21,15 @@ public interface TrailerColumns {
     String PARENT_TMDB_ID = "parent_tmdb_id";
 
     @DataType(DataType.Type.TEXT)
-    String TITLE = "title";
+    String NAME = "name";
 
     @DataType(DataType.Type.TEXT)
-    String YOUTUBE = "youtube";
+    String SIZE = "size";
+
+    @DataType(DataType.Type.TEXT)
+    String SOURCE = "source";
+
+    @DataType(DataType.Type.TEXT)
+    String TYPE = "type";
+
 }

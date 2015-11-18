@@ -109,7 +109,6 @@ public final class PopMoviesProvider {
                 pathSegment = 1)
         public static Uri withTmdbId(int tmdb_id){
             Uri u = buildUri(Path.FAVORITE_MOVIES);
-
             return buildUri(Path.FAVORITE_MOVIES, String.valueOf(tmdb_id));
         }
 
@@ -121,6 +120,38 @@ public final class PopMoviesProvider {
     }
 
     @TableEndpoint(table = PopMoviesDatabase.TRAILERS) public static class Trailers{
+        @ContentUri(
+                path = Path.TRAILERS,
+                type = "vnd.android.cursor.dir/trailer",
+                defaultSort = TrailerColumns.PARENT_TMDB_ID + " DESC")
+        public static final Uri CONTENT_URI = buildUri(Path.TRAILERS);
 
+        @InexactContentUri(
+                name = "PARENT_TABLE",
+                path = Path.TRAILERS + "/#",
+                type = "vnd.android.cursor.item/trailer",
+                whereColumn = TrailerColumns.PARENT_TABLE,
+                pathSegment = 1)
+        public static Uri withParentTable(String parent_table){
+            return buildUri(Path.TRAILERS, parent_table);
+        }
+    }
+
+    @TableEndpoint(table = PopMoviesDatabase.REVIEWS) public static class Reviews{
+        @ContentUri(
+                path = Path.REVIEWS,
+                type = "vnd.android.cursor.dir/review",
+                defaultSort = ReviewColumns.PARENT_TMDB_ID + " DESC")
+        public static final Uri CONTENT_URI = buildUri(Path.REVIEWS);
+
+        @InexactContentUri(
+                name = "PARENT_TABLE",
+                path = Path.REVIEWS + "/#",
+                type = "vnd.android.cursor.item/review",
+                whereColumn = ReviewColumns.PARENT_TABLE,
+                pathSegment = 1)
+        public static Uri withParentTable(String parent_table){
+            return buildUri(Path.REVIEWS, parent_table);
+        }
     }
 }
