@@ -171,8 +171,10 @@ public class MainFragment extends Fragment{
                     } catch (RemoteException | OperationApplicationException e) {
                         Log.e(LOG_TAG, "Error applying batch insert", e);
                     }
+                    if(c != null) {
+                        c.close();
+                    }
                 }
-                c.close();
             }
         }).start();
     }

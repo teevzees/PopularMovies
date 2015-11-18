@@ -1,12 +1,15 @@
 package com.jefftiensivu.popularmovies;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,6 +27,8 @@ import com.jefftiensivu.popularmovies.api.TmdbService;
 import com.jefftiensivu.popularmovies.data.PopMoviesColumns;
 import com.jefftiensivu.popularmovies.data.PopMoviesDbHelper;
 import com.jefftiensivu.popularmovies.data.PopMoviesProvider;
+import com.jefftiensivu.popularmovies.data.ReviewColumns;
+import com.jefftiensivu.popularmovies.data.TrailerColumns;
 import com.jefftiensivu.popularmovies.model.MovieDetails;
 import com.jefftiensivu.popularmovies.model.MovieInfo;
 import com.jefftiensivu.popularmovies.model.Result;
@@ -33,6 +38,7 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -54,6 +60,10 @@ public class DetailFragment extends Fragment {
     private String mSort;
     private Boolean mFavChecked;
 
+    private List<Youtube> mTrailerArray;
+    private List<Result> mReviewsArray;
+
+
     @Bind(R.id.movie_title) TextView textTitle;
     @Bind(R.id.movie_poster) ImageView imagePoster;
     @Bind(R.id.movie_year) TextView textYear;
@@ -69,6 +79,9 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detail_fragment, container, false);
         ButterKnife.bind(this, rootView);
+
+        mTrailerArray = null;
+        mReviewsArray = null;
 
         mMovieInfo = null;
         try {
@@ -128,11 +141,11 @@ public class DetailFragment extends Fragment {
         if (c.moveToFirst()) {
             mFavChecked = true;
             star.setChecked(true);
-            Log.v(LOG_TAG, "Yay! query info " + c.getString(2));
+            Log.v(LOG_TAG, "Favorite! query info " + c.getString(2));
         } else {
             mFavChecked = false;
             star.setChecked(false);
-            Log.v(LOG_TAG, "Nay! record not found!!!!!");
+            Log.v(LOG_TAG, "Not Favorite! record not found!!!!!");
         }
         c.close();
         star.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -152,35 +165,27 @@ public class DetailFragment extends Fragment {
             @Override
             public void onResponse(Response<MovieDetails> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    List<Youtube> trailerArray = response.body().getTrailers().getYoutube();
-                    List<Result> reviewsArray = response.body().getReviews().getResults();
+                    mTrailerArray = response.body().getTrailers().getYoutube();
+                    mReviewsArray = response.body().getReviews().getResults();
                     Log.v(LOG_TAG, "Response code " + response.code());
-                    if(trailerArray == null || trailerArray.size() < 1){
-                        Log.e(LOG_TAG, "trailerArray is empty!!!");
-                        //Todo take away Trailers section of UI.
-                    }else {
-                        for (Youtube t : trailerArray) {
-                            Log.v(LOG_TAG, t.getName());
-                            Log.v(LOG_TAG, t.getSource());
-                            //Todo add Trailer info to UI.
-                        }
+                    if (mTrailerArray == null || mTrailerArray.size() < 1) {
+                        Log.d(LOG_TAG, "mTrailerArray is empty!!!");
+                    } else {
+                        insertTrailers();
+                        //TODO add trailers to UI
                     }
-                    if(reviewsArray == null || reviewsArray.size() < 1){
-                        Log.e(LOG_TAG, "reviewsArray is empty!!!");
-                        //TODO take away the reviews section of UI.
-                    }else {
-                        for (Result t : reviewsArray) {
-                            Log.v(LOG_TAG, t.getAuthor());
-                            Log.v(LOG_TAG, t.getContent());
-                            //Todo add Trailer info to UI.
-                        }
+                    if (mReviewsArray == null || mReviewsArray.size() < 1) {
+                        Log.d(LOG_TAG, "mReviewsArray is empty!!!");
+                    } else {
+                        insertReviews();
+                        //Todo add reviews info to UI.
                     }
                     //TODO add supplemental info to DB and UI
                     mMovieDetails = response.body();
                     updateMovieDetails();
                 } else {
                     Log.e(LOG_TAG, response.errorBody().toString());
-                    Log.e(LOG_TAG,"Response code " + response.code());
+                    Log.e(LOG_TAG, "Response code " + response.code());
                 }
             }
 
@@ -190,6 +195,106 @@ public class DetailFragment extends Fragment {
                 Log.e(LOG_TAG, t.toString());
             }
         });
+    }
+
+    /**
+     * Batch inserts Movie Review Table Data
+     */
+    public void insertReviews(){
+        Log.d(LOG_TAG, "Inserting Movie Reviews");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(mReviewsArray.size());
+                Uri contentUri = PopMoviesProvider.Reviews.CONTENT_URI;
+                Cursor c = getActivity().getContentResolver().query(contentUri, null, null, null, null);
+
+                if (c != null) {//check for instance of the DB
+                    c.close();
+                    c = getActivity().getContentResolver().query(contentUri, null,
+                            "parent_tmdb_id = ? AND parent_table = ?",
+                            new String[] {mMovieDetails.getId().toString(),
+                                    PopMoviesDbHelper.sortUri(mSort).toString()},
+                            null);
+                    if(c == null || c.getCount() == 0){//check if the data is already there
+                        for (Result reviewInfo : mReviewsArray) {
+                            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                                    contentUri);
+                            builder.withValue(ReviewColumns.PARENT_TABLE, PopMoviesDbHelper.sortUri(mSort).toString());
+                            builder.withValue(ReviewColumns.PARENT_TMDB_ID, mMovieDetails.getId());
+
+                            builder.withValue(ReviewColumns.AUTHOR, reviewInfo.getAuthor());
+                            Log.i(LOG_TAG, "Inserting review data for " + reviewInfo.getAuthor());
+                            builder.withValue(ReviewColumns.CONTENT, reviewInfo.getContent());
+                            batchOperations.add(builder.build());
+                        }
+                        try {
+                            getActivity().getContentResolver().applyBatch(PopMoviesProvider.AUTHORITY,
+                                    batchOperations);
+                        } catch (RemoteException | OperationApplicationException e) {
+                            Log.e(LOG_TAG, "Error applying batch insert", e);
+                        }
+                        if(c != null) {
+                            c.close();
+                        }
+                    }else{
+                        c.close();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Batch inserts Movie Trailer Table Data
+     */
+    public void insertTrailers(){
+        Log.d(LOG_TAG, "Inserting Movie Trailers");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(mTrailerArray.size());
+                Uri contentUri = PopMoviesProvider.Trailers.CONTENT_URI;
+                Cursor c = getActivity().getContentResolver().query(contentUri, null, null, null, null);
+
+                if (c != null) {
+                    c.close();
+                    c = getActivity().getContentResolver().query(contentUri, null,
+                            "parent_tmdb_id = ? AND parent_table = ?",
+                            new String[] {mMovieDetails.getId().toString(),
+                                    PopMoviesDbHelper.sortUri(mSort).toString()},
+                            null);
+                    if(c == null || c.getCount() == 0) {//check if data is already there
+                        for (Youtube trailerInfo : mTrailerArray) {
+                            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                                    contentUri);
+                            builder.withValue(TrailerColumns.PARENT_TABLE, PopMoviesDbHelper.sortUri(mSort).toString());
+                            builder.withValue(TrailerColumns.PARENT_TMDB_ID, mMovieDetails.getId());
+
+                            builder.withValue(TrailerColumns.NAME, trailerInfo.getName());
+                            Log.i(LOG_TAG, "Inserting trailer data for " + trailerInfo.getName());
+                            builder.withValue(TrailerColumns.SIZE, trailerInfo.getSize());
+                            builder.withValue(TrailerColumns.SOURCE, trailerInfo.getSource());
+                            builder.withValue(TrailerColumns.TYPE, trailerInfo.getType());
+                            batchOperations.add(builder.build());
+                        }
+                        try {
+                            getActivity().getContentResolver().applyBatch(PopMoviesProvider.AUTHORITY,
+                                    batchOperations);
+                        } catch (RemoteException | OperationApplicationException e) {
+                            Log.e(LOG_TAG, "Error applying batch insert", e);
+                        }
+                        if(c != null){
+                            c.close();
+                        }
+                    }else{
+                        c.close();
+                    }
+                }
+            }
+        }).start();
     }
 
     /**
@@ -213,7 +318,7 @@ public class DetailFragment extends Fragment {
                 cv.put(PopMoviesColumns.VOTE_AVERAGE, mMovieDetails.getVoteAverage());
                 cv.put(PopMoviesColumns.TIME_STAMP, Time.getTimeStamp());
 
-                for (Uri contentUri : PopMoviesDbHelper.getTableUris()){
+                for (Uri contentUri : PopMoviesDbHelper.getMovieTableUris()){
                     int uRows = getActivity().getContentResolver().update(
                             contentUri,
                             cv,
