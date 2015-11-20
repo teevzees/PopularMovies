@@ -10,7 +10,7 @@ public class TmdbService {
     private static final String LOG_TAG = TmdbService.class.getSimpleName();
     private static final String BASE_URL = "http://api.themoviedb.org/";
 
-    public static final String MY_API_KEY = "**********************************";
+    public static final String MY_API_KEY = "62d35596628c0b0ad37ecb6e87c385b2";
 
     private static TmdbApi apiService;
 
